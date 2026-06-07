@@ -77,6 +77,12 @@ UPDATE Sedes SET ImagenPrincipal = 'medellin.jpeg' WHERE NombreCorto = 'Surameri
 UPDATE Sedes SET ImagenPrincipal = 'santamartha.jpeg' WHERE NombreCorto = 'Rodadero';
 ```
 
+- Agregar imágenes en `FODUN.Web/wwwroot/images/sedes/`
+- Al final del script `Database/FODUN_DB_Script.sql` hay un bloque 
+  comentado con los UPDATE de imágenes
+- Descomenta y ejecuta esos UPDATE en SSMS con los nombres 
+  exactos de tus archivos de imagen
+
 ### 6. Ejecutar el proyecto
 - Abrir `FODUN.Reservas.sln` en Visual Studio 2022
 - Restaurar paquetes NuGet: `Update-Package -reinstall`
