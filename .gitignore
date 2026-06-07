@@ -1,0 +1,19 @@
+# Carpetas de compilación
+**/bin/
+**/obj/
+
+# Configuración con credenciales
+**/appsettings.json
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# Paquetes NuGet
+**/packages/
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store

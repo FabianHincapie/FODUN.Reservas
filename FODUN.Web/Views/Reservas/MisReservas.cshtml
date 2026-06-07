@@ -1,0 +1,242 @@
+﻿@model IEnumerable<FODUN.Entities.Models.Reserva>
+@{
+    ViewData["Title"] = "Mis Reservas";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FODUN - Mis Reservas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .header-fodun {
+            background-color: #8B0000;
+            color: white;
+            padding: 15px 30px;
+        }
+
+        .navbar-fodun {
+            background-color: #e0e0e0;
+            border-bottom: 2px solid #8B0000;
+        }
+
+            .navbar-fodun .nav-link {
+                color: #333;
+                font-weight: 500;
+            }
+
+                .navbar-fodun .nav-link:hover {
+                    color: #8B0000;
+                }
+
+        .btn-fodun {
+            background-color: #8B0000;
+            color: white;
+            border: none;
+            border-radius: 0;
+        }
+
+            .btn-fodun:hover {
+                background-color: #6B0000;
+                color: white;
+            }
+
+        .table thead {
+            background-color: #8B0000;
+            color: white;
+        }
+
+        .tab-fodun {
+            background-color: #8B0000;
+            color: white;
+            padding: 8px 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-fodun">
+        <h1 class="h3 mb-0">SISTEMA DE RESERVAS</h1>
+        <small>Sedes Recreativas y Apartamentos</small>
+    </div>
+
+    <nav class="navbar-fodun px-4 py-2 d-flex justify-content-between align-items-center">
+        <div class="d-flex gap-3">
+            <a asp-controller="Sedes" asp-action="Index" class="nav-link">Sedes Recreativas y Apartamentos</a>
+            <a asp-controller="Reservas" asp-action="MisReservas" class="nav-link active">Mis Reservas</a>
+            <a asp-controller="Account" asp-action="Logout" class="nav-link">Cerrar Sesión</a>
+        </div>
+        <div style="color:#555;font-size:0.9rem;">
+            👤 Bienvenido, @Context.Session.GetString("NombreUsuario")
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4 px-4">
+        <h4 class="text-danger fw-bold">Mis Reservas</h4>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-success">@TempData["Mensaje"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="card mt-3">
+            <div class="card-header p-0">
+                <span class="tab-fodun d-inline-block">Mis Reservas</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ampliar</th>
+                            <th>Lugar</th>
+                            <th>Fecha Reserva</th>
+                            <th>Fecha Llegada</th>
+                            <th>Fecha Salida</th>
+                            <th>No. Personas</th>
+                            <th>No. Habitaciones</th>
+                            <th>Valor Total</th>
+                            <th>Estado</th>
+                            <th>Comprobante de Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    No tiene reservas registradas.
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var reserva in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-secondary"
+                                            onclick="verDetalle(@reserva.ReservaId,
+                                                '@reserva.Sede?.Nombre',
+                                                '@reserva.FechaLlegada.ToString("dd-MM-yyyy")',
+                                                '@reserva.FechaSalida.ToString("dd-MM-yyyy")',
+                                                '@reserva.NumPersonas',
+                                                '@reserva.NumHabitaciones',
+                                                '@reserva.ValorTotal.ToString("C0")',
+                                                '@reserva.Estado')">
+                                        🔍
+                                    </button>
+                                </td>
+                                <td>@reserva.Sede?.Nombre</td>
+                                <td>@reserva.FechaReserva.ToString("dd-MM-yyyy")</td>
+                                <td>@reserva.FechaLlegada.ToString("dd-MM-yyyy")</td>
+                                <td>@reserva.FechaSalida.ToString("dd-MM-yyyy")</td>
+                                <td>@reserva.NumPersonas</td>
+                                <td>@reserva.NumHabitaciones</td>
+                                <td>@reserva.ValorTotal.ToString("C0")</td>
+                                <td>
+                                    <span class="badge @(reserva.Estado == "Confirmada" ? "bg-success" :
+                                                                                                  reserva.Estado == "Cancelada" ? "bg-danger" :
+                                                                                                  "bg-warning text-dark")">
+                                    @reserva.Estado
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                @if (reserva.Estado != "Cancelada")
+                                    {
+                                        @if (!reserva.ComprobanteEnviado)
+                                        {
+                                            <button class="btn btn-fodun btn-sm"
+                                                    onclick="enviarComprobante(@reserva.ReservaId)">
+                                                Enviar
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span title="Comprobante enviado" style="font-size:1.5rem;">📄</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Cancelada</span>
+                                    }
+                                </td>
+                        </tr>
+                                                }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-muted mt-5 py-3" style="font-size:0.8rem;border-top:1px solid #ddd;">
+        FODUN - Fondo de Docentes Universidad Nacional - Derechos Reservados © 2026
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal Detalle Reserva -->
+    <div class="modal fade" id="modalDetalle" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Detalle de Reserva</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalDetalleBody">
+                </div>
+                <div class="modal-footer">
+                    <form asp-action="Cancelar" method="post" id="formCancelar">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="reservaId" id="hdnReservaId" />
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('¿Está seguro de cancelar esta reserva?')">
+                            Cancelar Reserva
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function verDetalle(reservaId, lugar, fechaLlegada, fechaSalida, personas, habitaciones, valor, estado) {
+            document.getElementById('hdnReservaId').value = reservaId;
+
+            var html = '<table class="table table-bordered">' +
+                '<tr><th>Lugar</th><td>' + lugar + '</td></tr>' +
+                '<tr><th>Fecha Llegada</th><td>' + fechaLlegada + '</td></tr>' +
+                '<tr><th>Fecha Salida</th><td>' + fechaSalida + '</td></tr>' +
+                '<tr><th>No. Personas</th><td>' + personas + '</td></tr>' +
+                '<tr><th>No. Habitaciones</th><td>' + habitaciones + '</td></tr>' +
+                '<tr><th>Valor Total</th><td>' + valor + '</td></tr>' +
+                '<tr><th>Estado</th><td>' + estado + '</td></tr>' +
+                '</table>';
+
+            document.getElementById('modalDetalleBody').innerHTML = html;
+
+            // Mostrar/ocultar botón cancelar según estado
+            var formCancelar = document.getElementById('formCancelar');
+            formCancelar.style.display = estado === 'Cancelada' ? 'none' : 'inline';
+
+            var modal = new bootstrap.Modal(document.getElementById('modalDetalle'));
+            modal.show();
+        }
+
+        function enviarComprobante(reservaId) {
+            if (confirm('¿Desea enviar el comprobante de la reserva #' + reservaId + ' a su correo?')) {
+                window.location.href = '/Reservas/EnviarComprobante/' + reservaId;
+            }
+        }
+    </script>
+</body>
+</html>
