@@ -92,6 +92,8 @@ UPDATE Sedes SET ImagenPrincipal = 'santamartha.jpeg' WHERE NombreCorto = 'Rodad
 
 ## Estructura del proyecto
 FODUN.Reservas
+├── Database
+│   └── FODUN_DB_Script.sql    → Script de creación de la BD
 ├── FODUN.Entities    → Entidades / Modelos
 ├── FODUN.DAL         → Acceso a datos (EF Core)
 ├── FODUN.BLL         → Lógica de negocio
