@@ -20,7 +20,7 @@ Desarrollado como prueba técnica para el cargo de Analista Desarrollador .NET.
 ## Instalación
 
 ### 1. Clonar el repositorio
-git clone https://github.com/TU_USUARIO/FODUN.Reservas.git
+git clone https://github.com/FabianHincapie/FODUN.Reservas.git
 
 ### 2. Configurar la base de datos
 - Abrir SQL Server Management Studio
